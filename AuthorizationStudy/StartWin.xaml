@@ -8,7 +8,8 @@
         Title="Авторизация" 
         Height="550" 
         Width="400"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize">
     
     <Grid>
         <Grid.ColumnDefinitions>
