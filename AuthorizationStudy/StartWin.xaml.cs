@@ -21,10 +21,10 @@ namespace AuthorizationStudy
     /// </summary>
     public partial class MainWindow : Window
     {
-        List<UsersClass> UserList = new List<UsersClass>();
-        int _CpActivate = 0;
-        int _ErrorCounter = 0;
-        int _ErrorRead = 0;
+        List<UsersClass> UserList = new List<UsersClass>();// создание Листа по классу
+        int cpActivate = 0;
+        int errorCounter = 0;
+        int errorOfRead = 0;
 
         public MainWindow()
         {
@@ -36,7 +36,7 @@ namespace AuthorizationStudy
                 Name = "Кристина",
                 Login = "Kr1",
                 Password = "Kr2"
-            });
+            });// заполняем лист вместо базы
 
             UserList.Add(new UsersClass
             {
@@ -70,23 +70,23 @@ namespace AuthorizationStudy
                 Password = "Ul2"
             });
 
-            if (File.Exists("File.txt") == true)
+            if (File.Exists("File.txt") == true)// защита от дауна
             {
                 if (FileSaveClass.FileRead("file.txt") != null)
                 {
                     try
                     {
-                        Convert.ToInt32(FileSaveClass.FileRead("file.txt"));
+                        Convert.ToInt32(FileSaveClass.FileRead("file.txt")); // проверка правильности данных в файле
                     }
                     catch
                     {
                         MessageBox.Show("Ошибка сохранения пользователя, повторите вход!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-                        _ErrorRead = 1;
+                        errorOfRead = 1;
                         File.Delete("File.txt");
                     }
-                    if (_ErrorRead == 0)
+                    if (errorOfRead == 0)
                     {
-                        if (Convert.ToInt32(FileSaveClass.FileRead("file.txt")) > UserList.Count() || Convert.ToInt32(FileSaveClass.FileRead("file.txt")) < 0)
+                        if (Convert.ToInt32(FileSaveClass.FileRead("file.txt")) > UserList.Count() || Convert.ToInt32(FileSaveClass.FileRead("file.txt")) < 0)// Проверка id 
                         {
                             MessageBox.Show("Сохранённый пользователь перестал существовать!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                             File.Delete("File.txt");
@@ -94,28 +94,28 @@ namespace AuthorizationStudy
                         else
                         {
                             cbxRemind.IsChecked = true;
-                            int SaveId = Convert.ToInt32(FileSaveClass.FileRead("file.txt"));
-                            var user = UserList.Where(u => u.Id == SaveId).FirstOrDefault();
+                            int saveId = Convert.ToInt32(FileSaveClass.FileRead("file.txt"));
+                            var user = UserList.Where(u => u.Id == saveId).FirstOrDefault();
                             txtLogin.Text = user.Login;
                             pswPassword.Password = user.Password;
                         }
                     }
                 }
             }
-            else if (File.Exists("File.txt") == false)
+            else if (File.Exists("File.txt") == false)// Если файла не существует, создаёт файл
             {
                 File.Create("File.txt");
             }
         }
 
-        private void CapchaGet()
+        private void CapchaGet()//Получает новую капчу и присваивает её текстовому полю! 
         {
             string CpString = "";
             CpString = CapchaGenClass.CapchaGenerate();
             txbCapchaEnter.Text = CpString;
         }
 
-        private void CapchaShow()//открывает капчу
+        private void CapchaShow()//открывает капчу на окне
         {
             btnClose1.Visibility = Visibility.Hidden;  
             btnLogin1.Visibility = Visibility.Hidden;
@@ -128,83 +128,83 @@ namespace AuthorizationStudy
             brdCapcha.Visibility = Visibility.Visible;
         }
 
-        private void Login()
+        private void Login()// Метод входа в приложение
         {
-            var user = UserList.Where(u => u.Login == txtLogin.Text && u.Password == pswPassword.Password).FirstOrDefault();
+            var user = UserList.Where(u => u.Login == txtLogin.Text && u.Password == pswPassword.Password).FirstOrDefault();// Поиск по логину и паролю
 
-            if (user != null && txbCapchaEnter.Text.ToLower() == txtCapcha.Text.ToLower())
+            if (user != null && txbCapchaEnter.Text.ToLower() == txtCapcha.Text.ToLower())// проверка правильности ввода капчи и пароля
             {
-                if (File.Exists("File.txt") == true)
+                if (File.Exists("File.txt") == true)// Проверка существования файла!
                 {
                     if (cbxRemind.IsChecked == true && FileSaveClass.FileRead("File.txt") == null && File.Exists("file.txt") == true)
                     {
-                        FileSaveClass.FileWrite(Convert.ToString(user.Id), "File.txt");
+                        FileSaveClass.FileWrite(Convert.ToString(user.Id), "File.txt");// записывает id пользователя в файл
                     }
-                    else if (cbxRemind.IsChecked == false)
+                    else if (cbxRemind.IsChecked == false)// удаление файла 
                     {
                         File.Delete("File.txt");
                     }
                 }
                 else
                 {
-                    if (cbxRemind.IsChecked == true && File.Exists("file.txt") == false)
+                    if (cbxRemind.IsChecked == true && File.Exists("file.txt") == false)// Полная шляпа, когда пользователь трогает сраный файл!!!
                     {
                         MessageBox.Show("Внимание! \nИсполняемый файл занят системным процессом! " +
                             "\nПри следующей авторизации вам придётся ещё раз ввести ваши данные!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                 }
 
-                WorkWin workwin = new WorkWin(user);
+                WorkWin workwin = new WorkWin(user); // Переход на рабочее окно
                 this.Hide();
                 workwin.ShowDialog();
                 this.Close();
             }
-            else
+            else// при неправильном вводе пароля
             {
                 MessageBox.Show("Неправильный логин или пароль!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-                _ErrorCounter++;
+                errorCounter++;// счёт ошибок
 
-                if (txbCapchaEnter.Text.ToLower() != txtCapcha.Text.ToLower() && _CpActivate == 1)
+                if (txbCapchaEnter.Text.ToLower() != txtCapcha.Text.ToLower() && cpActivate == 1)// неправильно введена капча
                 {
                     MessageBox.Show("Неправильно введена капча!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
 
-                if (_ErrorCounter > 2)
+                if (errorCounter > 2)// Открытие капчи при трёх ошибках
                 {
                     CapchaShow();
-                    _CpActivate = 1;
+                    cpActivate = 1;
                 }
             }
 
-            if (_CpActivate == 1)
+            if (cpActivate == 1)// Получение новой капчи при первом открытии
             {
                 CapchaGet();
             }
         }
 
-        private void btnLogin_Click(object sender, RoutedEventArgs e)
+        private void btnLogin_Click(object sender, RoutedEventArgs e) 
         {
-            Login();
+            Login();// Вход по кнопке
         }
 
         private void btnClose_Click(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            this.Close(); // Закрытие по кнопке
         }
 
         private void btnCapchaReboot_Click(object sender, RoutedEventArgs e)
         {
-            CapchaGet();
+            CapchaGet(); // Обновление капчи по нажатию кнопки
         }
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Escape)
+            if (e.Key == Key.Escape)// Выход при нажатии Esc
             {
                 this.Close();
             }
 
-            if (e.Key == Key.Enter)
+            if (e.Key == Key.Enter)// Вход при нажатии Enter
             {
                 Login();
             }
