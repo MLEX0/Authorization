@@ -106,9 +106,8 @@ namespace AuthorizationStudy
             brdCapcha.Visibility = Visibility.Visible;
         }
 
-        private void btnLogin_Click(object sender, RoutedEventArgs e)
+        private void Login()
         {
-
             var user = UserList.Where(u => u.Login == txtLogin.Text && u.Password == pswPassword.Password).FirstOrDefault();
 
             if (user != null && txbCapchaEnter.Text.ToLower() == txtCapcha.Text.ToLower())
@@ -117,7 +116,7 @@ namespace AuthorizationStudy
                 {
                     FileSaveClass.FileWrite(Convert.ToString(user.Id), "File.txt");
                 }
-                else if(cbxRemind.IsChecked == false)
+                else if (cbxRemind.IsChecked == false)
                 {
                     File.Delete("File.txt");
                 }
@@ -148,7 +147,11 @@ namespace AuthorizationStudy
             {
                 CapchaGet();
             }
+        }
 
+        private void btnLogin_Click(object sender, RoutedEventArgs e)
+        {
+            Login();
         }
 
         private void btnClose_Click(object sender, RoutedEventArgs e)
@@ -159,6 +162,19 @@ namespace AuthorizationStudy
         private void btnCapchaReboot_Click(object sender, RoutedEventArgs e)
         {
             CapchaGet();
+        }
+
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Escape)
+            {
+                this.Close();
+            }
+
+            if (e.Key == Key.Enter)
+            {
+                Login();
+            }
         }
     }
 }

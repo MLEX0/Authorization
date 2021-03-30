@@ -9,7 +9,8 @@
         Height="550" 
         Width="400"
         WindowStartupLocation="CenterScreen"
-        ResizeMode="NoResize">
+        ResizeMode="NoResize"
+        KeyDown="Window_KeyDown">
     
     <Grid>
         <Grid.ColumnDefinitions>
