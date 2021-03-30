@@ -32,7 +32,7 @@ namespace AuthorizationStudy
 
             UserList.Add(new UsersClass
             {
-                Id = 1,
+                Id = 0,
                 Name = "Кристина",
                 Login = "Kr1",
                 Password = "Kr2"
@@ -40,7 +40,7 @@ namespace AuthorizationStudy
 
             UserList.Add(new UsersClass
             {
-                Id = 2,
+                Id = 1,
                 Name = "Илья",
                 Login = "Il1",
                 Password = "Il2"
@@ -48,7 +48,7 @@ namespace AuthorizationStudy
 
             UserList.Add(new UsersClass
             {
-                Id = 3,
+                Id = 2,
                 Name = "Никита",
                 Login = "Ni1",
                 Password = "Ni2"
@@ -56,7 +56,7 @@ namespace AuthorizationStudy
 
             UserList.Add(new UsersClass
             {
-                Id = 4,
+                Id = 3,
                 Name = "マシャイ",
                 Login = "Ma1",
                 Password = "Ma2"
@@ -64,7 +64,7 @@ namespace AuthorizationStudy
 
             UserList.Add(new UsersClass
             {
-                Id = 5,
+                Id = 4,
                 Name = "Юлия",
                 Login = "Ul1",
                 Password = "Ul2"
@@ -134,13 +134,24 @@ namespace AuthorizationStudy
 
             if (user != null && txbCapchaEnter.Text.ToLower() == txtCapcha.Text.ToLower())
             {
-                if (cbxRemind.IsChecked == true && FileSaveClass.FileRead("file.txt") == null)
+                if (File.Exists("File.txt") == true)
                 {
-                    FileSaveClass.FileWrite(Convert.ToString(user.Id), "File.txt");
+                    if (cbxRemind.IsChecked == true && FileSaveClass.FileRead("File.txt") == null && File.Exists("file.txt") == true)
+                    {
+                        FileSaveClass.FileWrite(Convert.ToString(user.Id), "File.txt");
+                    }
+                    else if (cbxRemind.IsChecked == false)
+                    {
+                        File.Delete("File.txt");
+                    }
                 }
-                else if (cbxRemind.IsChecked == false)
+                else
                 {
-                    File.Delete("File.txt");
+                    if (cbxRemind.IsChecked == true && File.Exists("file.txt") == false)
+                    {
+                        MessageBox.Show("Внимание! \nИсполняемый файл занят системным процессом! " +
+                            "\nПри следующей авторизации вам придётся ещё раз ввести ваши данные!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
                 }
 
                 WorkWin workwin = new WorkWin(user);
