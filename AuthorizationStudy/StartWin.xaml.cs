@@ -24,6 +24,7 @@ namespace AuthorizationStudy
         List<UsersClass> UserList = new List<UsersClass>();
         int _CpActivate = 0;
         int _ErrorCounter = 0;
+        int _ErrorRead = 0;
 
         public MainWindow()
         {
@@ -39,7 +40,7 @@ namespace AuthorizationStudy
 
             UserList.Add(new UsersClass
             {
-                Id = 1,
+                Id = 2,
                 Name = "Илья",
                 Login = "Il1",
                 Password = "Il2"
@@ -47,7 +48,7 @@ namespace AuthorizationStudy
 
             UserList.Add(new UsersClass
             {
-                Id = 1,
+                Id = 3,
                 Name = "Никита",
                 Login = "Ni1",
                 Password = "Ni2"
@@ -55,7 +56,7 @@ namespace AuthorizationStudy
 
             UserList.Add(new UsersClass
             {
-                Id = 1,
+                Id = 4,
                 Name = "マシャイ",
                 Login = "Ma1",
                 Password = "Ma2"
@@ -63,7 +64,7 @@ namespace AuthorizationStudy
 
             UserList.Add(new UsersClass
             {
-                Id = 1,
+                Id = 5,
                 Name = "Юлия",
                 Login = "Ul1",
                 Password = "Ul2"
@@ -73,11 +74,32 @@ namespace AuthorizationStudy
             {
                 if (FileSaveClass.FileRead("file.txt") != null)
                 {
-                    cbxRemind.IsChecked = true;
-                    int SaveId = Convert.ToInt32(FileSaveClass.FileRead("file.txt"));
-                    var user = UserList.Where(u => u.Id == SaveId).FirstOrDefault();
-                    txtLogin.Text = user.Login;
-                    pswPassword.Password = user.Password;
+                    try
+                    {
+                        Convert.ToInt32(FileSaveClass.FileRead("file.txt"));
+                    }
+                    catch
+                    {
+                        MessageBox.Show("Ошибка сохранения пользователя, повторите вход!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                        _ErrorRead = 1;
+                        File.Delete("File.txt");
+                    }
+                    if (_ErrorRead == 0)
+                    {
+                        if (Convert.ToInt32(FileSaveClass.FileRead("file.txt")) > UserList.Count() || Convert.ToInt32(FileSaveClass.FileRead("file.txt")) < 0)
+                        {
+                            MessageBox.Show("Сохранённый пользователь перестал существовать!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                            File.Delete("File.txt");
+                        }
+                        else
+                        {
+                            cbxRemind.IsChecked = true;
+                            int SaveId = Convert.ToInt32(FileSaveClass.FileRead("file.txt"));
+                            var user = UserList.Where(u => u.Id == SaveId).FirstOrDefault();
+                            txtLogin.Text = user.Login;
+                            pswPassword.Password = user.Password;
+                        }
+                    }
                 }
             }
             else if (File.Exists("File.txt") == false)
